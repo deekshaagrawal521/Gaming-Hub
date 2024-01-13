@@ -1,89 +1,70 @@
-// Quiz data
-const quizData = [
-    {
-        question: "x+y-(y-x) denotes ?",
-        choices: ["0", "2x", "-2x", "1"],
-        correctAnswer: 1
-    },
-    {
-        question: "what is the part of oop concept in the following ?",
-        choices: ["virtual function", "pointer", "abstraction", "friend function",],
-        correctAnswer: 2
-    },
-    {
-        question: "pointer stores ?",
-        choices: ["value", "address", "null", "none of them"],
-        correctAnswer: 1
+document.addEventListener('DOMContentLoaded', () => {
+  const cells = document.getElementsByClassName('cell');
+  const resetButton = document.getElementById('reset');
+
+  let currentPlayer = 'X';
+  let board = ['', '', '', '', '', '', '', '', ''];
+  let gameOver = false;
+
+  for (let i = 0; i < cells.length; i++) {
+    cells[i].addEventListener('click', () => {
+      if (!gameOver && cells[i].innerHTML === '') {
+        cells[i].innerHTML = currentPlayer;
+        board[i] = currentPlayer;
+
+        if (checkWin()) {
+          alert(currentPlayer + ' wins!');
+          gameOver = true;
+        } else if (checkTie()) {
+          alert("It's a tie!");
+          gameOver = true;
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+      }
+    });
+  }
+
+  resetButton.addEventListener('click', () => {
+    currentPlayer = 'X';
+    board = ['', '', '', '', '', '', '', '', ''];
+    gameOver = false;
+
+    for (let i = 0; i < cells.length; i++) {
+      cells[i].innerHTML = '';
     }
-];
+  });
 
-let currentQuestion = 0;
-let score = 0;
-const questionContainer = document.getElementById('question-container');
-const choicesContainer = document.getElementById('choices-container');
-const submitBtn = document.getElementById('submit-btn');
-const resultContainer = document.getElementById('result');
+  function checkWin() {
+    const winningCombinations = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
 
-function loadQuestion() {
-    const question = quizData[currentQuestion].question;
-    const choices = quizData[currentQuestion].choices;
+    for (let combination of winningCombinations) {
+      const [a, b, c] = combination;
 
-    questionContainer.textContent = question;
-    choicesContainer.innerHTML = '';
-
-    for (let i = 0; i < choices.length; i++) {
-        const input = document.createElement('input');
-        input.type = 'radio';
-        input.name = 'choice';
-        input.value = i;
-
-        const label = document.createElement('label');
-        label.appendChild(input);
-        label.appendChild(document.createTextNode(choices[i]));
-
-        choicesContainer.appendChild(label);
-    }
-}
-
-function submitAnswer() {
-    const selectedChoice = document.querySelector('input[name="choice"]:checked');
-
-    if (!selectedChoice) {
-        return;
-    }
-
-    const selectedAnswer = parseInt(selectedChoice.value);
-
-    if (selectedAnswer === quizData[currentQuestion].correctAnswer) {
-        score++;
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+        return true;
+      }
     }
 
-    currentQuestion++;
+    return false;
+  }
 
-    if (currentQuestion === quizData.length) {
-        showResult();
-    } else {
-        loadQuestion();
+  function checkTie
+  () {
+    for (let cell of board) {
+    if (cell === '') {
+    return false;
     }
-}
-
-function showResult() {
-    questionContainer.style.display = 'none';
-    choicesContainer.style.display = 'none';
-    submitBtn.style.display = 'none';
-    
-    resultContainer.textContent = `You scored ${score} out of ${quizData.length}.`;
-    if(score==quizData.length){
-        resultContainer.textContent=`Congratulations!! You win : your score is ${score} out of ${quizData.length}.`;  
     }
-    else{
-        resultContainer.textContent=` Sorry!! You lose : your score is ${score} out of ${quizData.length}.`; 
-    }
-}
-
-
-// Load initial question
-loadQuestion();
-
-// Event listeners
-submitBtn.addEventListener('click', submitAnswer);
+    return true;
+  }
+});
